@@ -1,8 +1,2 @@
-package com.codewithmosh;
-
-public class Main {
-    public void log(int[] numbers) {
-        System.out.println(numbers[0]);
-        
-    }
-}
+import java.util.ArrayList;
+import java.util.PriorityQueue;
