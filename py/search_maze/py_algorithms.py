@@ -36,3 +36,14 @@ class QueueFrontier(StackFrontier):
             self.frontier = self.frontier[1]
             return node
         
+class Maze():
+    def __init__(self, filename):
+
+        with open(filename) as f:
+            contents = f.read()
+
+        if contents.count("A") != 1:
+            raise Exception ("maze must have exactly one start point")
+        if contents.count("B") != 1:
+            raise Exception("maze must have excatly one goal")
+        
