@@ -105,6 +105,43 @@ class Maze():
             if 0 <= r < self.height and 0 <= c <self.width and not self.walls[r][c]:
                 result.append((action, (r,c)))
             return result
+        
+    def solve(self):
+        """Finds a solution to maze, if one exists."""
+
+        self.num_explored = 0 
+
+        start = Node(state=self.start, parent=None, action=None)
+        frontier = StackFrontier()
+        frontier.add(start)
+
+        self.explored = set()
+
+        while True:
+            if frontier.empty():
+                raise Exception("no solution")
+            
+            node = frontier.romove()
+            self.num_explored += 1
+
+            if node.state == self.goal:
+                actions = []
+                cells = []
+                while node.parent is not None:
+                    actions.append(node.action)
+                    cells.append(node.state)
+                    node = node.parent
+                actions.reverse()
+                cells.reverse()
+                self.solution = (actions, cells)
+                return 
+            
+            self.explored.add(node.state)
+
+            for action, state in self.neighbors(node.state):
+                if not frontier.contains_state(state) and state not in self.explored: 
+                    child = Node(state=state, parent=node, action=action)
+                    frontier.add(child)
 
 
 
