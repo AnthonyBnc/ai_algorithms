@@ -62,7 +62,7 @@ class Maze():
                     elif contents[i][j] == "B":
                         self.goal = (i,j)
                         row.append(False)
-                    elif contents[i][j] == "":
+                    elif contents[i][j] == " ":
                         row.append(False)
                     else:
                         row.append(True)
@@ -121,7 +121,7 @@ class Maze():
             if frontier.empty():
                 raise Exception("no solution")
             
-            node = frontier.romove()
+            node = frontier.remove()
             self.num_explored += 1
 
             if node.state == self.goal:
@@ -182,7 +182,7 @@ class Maze():
 
                 #Empty cell
                 else:
-                    fill (237, 240, 252)
+                    fill = (237, 240, 252)
 
                 # Draw cell
                 draw.rectangle(
