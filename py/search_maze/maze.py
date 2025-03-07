@@ -146,7 +146,7 @@ class Maze():
     def output_image(self, filename, show_solution=True, show_explored=False):
         from PIL import Image, ImageDraw
         cell_size = 50
-        cell_border = 2
+        cell_border = 2x
 
         img = Image.new(
             "RGBA",
