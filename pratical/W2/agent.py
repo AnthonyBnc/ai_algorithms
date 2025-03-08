@@ -269,3 +269,59 @@ class XYEnvironment(Environment):
                 self.add_thing(t, destination)
                 t.location = destination 
             return thing.bump
+        
+    def add_thing(self, thing, location=None, exclude_duplicate_class_item=False):
+        """Add things to the world. If (exclude_duplicate_class_item) then the item won't be
+        added if the location has at least one item of the same class."""
+        if location is None:
+            super().add_thing(thing)
+        elif self.is_inbounds(location):
+            if(exclude_duplicate_class_item and
+               any(isinstance(t, thing.__class__) for t in self.list_things_at(location))):
+                return
+            super().add_thing(thing, location)
+    
+    def is_inbounds(self, location):
+        """Checks to make sure that the location is inbounds (within walls if we have walls)"""
+        x, y = location 
+        return not (x < self.x_start or x > self.x_end or y < self.y_start or y > self.y_end)
+
+    def random_location_inbound(self, exclude = None):
+        """Returns a random location that is inbounds (within walls if we have walls)"""
+        location = (random.randint(self.x_start, self.x_end), 
+                    random.randint(self.y_start, self.y_end))
+        return location 
+    
+    def delete_thing(self, thing):
+        """Deletes thing, and everything it is holding (if thing is an agent)"""
+        if isinstance(thing, Agent):
+            del thing.holding
+        
+        super().delete_thing(thing)
+        for obs in self.observers:
+            obs.thing_deleted(thing)
+        
+    def add_walls(self):
+        """Put walls around the entire perimeter of the grid."""
+        for x in range(self.width):
+            self.add_thing(Wall(), (x, 0))
+            self.add_thing(Wall(), (x, self.height - 1))
+        for y in range(1, self.height - 1):
+            self.add_thing(Wall(), (0, y))
+            self.add_thing(Wall(), (self.width - 1, y))
+
+        self.x_start, self.y_start = (1,1)
+        self.x_end, self.y_end = (self.width - 1, self.height - 1)
+    
+    def add_observer(self, observer):
+        """Adds an observer to the list of observers.
+        An observer is typically an EnvGUI.
+
+        Each observer is notified of changes in move_to and add_thing,
+        by calling the observer's methods thing_moved(thing)
+        and thing_added(thing, loc)."""
+        self.observers.append(observer)
+
+    def turn_heading(self, heading, inc):
+        """Return the heading to the left (inc=+1) or right (inc=-1) of heading."""
+        return turn_heading(heading, inc)
