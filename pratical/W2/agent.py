@@ -408,3 +408,52 @@ class GraphicEnvironment(XYEnvironment):
         """Hide the BlockGrid for this world"""
         self.visible = False
         display(HTML(''))
+
+class Obstacle(Thing):
+    """Something that can cause a bump, preventing an agent from
+    moving into the same square it's in."""
+    pass
+
+
+class Wally(Obstacle):
+    pass
+
+
+class Dirt(Thing):
+    pass
+
+def ReflexVacuumAgentGE(sensing_radius=1): # for GraphicEnv
+    """
+    A reflex agent for the 2D vacuum environment - GraphicEnvironment.
+    >>> agent = ReflexVacuumAgentGE()
+    >>> environment = TrivialVacuumEnvironment()
+    >>> environment.add_thing(agent)
+    >>> environment.run()
+    >>> environment.status == {(1,0):'Clean' , (0,0) : 'Clean'}
+    True
+    """
+
+    def program(percept):
+        agent_loc, all_things = percept
+        all_dirts = [thing for thing in all_things if thing[0].__class__.__name__ == "Dirt"]
+        print("the agent's current detectable dirsts are: ", all_dirts)
+
+        if all_dirts:
+            # check if the agent's current location contains dirt
+            all_dirts.sort(key=lambda a: distance_squared(agent_loc, a[1]))
+            print("the agent's sorted detectable dirsts are: ", all_dirts)
+            if all_dirts[0][1] == agent_loc:
+                return 'Suck'
+        return input('Percept={}; action? '.format(percept))
+
+    return Agent(program,sensing_radius)
+
+env2 = GraphicEnvironment()
+env2.add_thing(ReflexVacuumAgentGE(sensing_radius=2),location=(2,2))
+env2.add_thing(Dirt(),location=(3,3))
+# env2.add_thing(Dirt(),location=(2,2))
+env2.add_thing(Dirt(),location=(1,1))
+# env2.add_thing(Dirt(),location=(2,2))
+env2.reveal()
+
+env2.run(steps=10)
