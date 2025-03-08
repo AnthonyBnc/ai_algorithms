@@ -174,3 +174,98 @@ class Environment:
             print(" from list: {}". format([(thing, thing.location) for thing in self.things]))
         if thing in self.agents:
             self.agents.remove(thing)
+
+class XYEnvironment(Environment):
+    """This class is for environments on a 2D plane, with locations
+    labelled by (x, y) points, either discrete or continuous.
+    
+    Agents perceive things within a radius. Each agent in the 
+    encironment has a .loaction slot which should be alocation such
+    as (0, 1), and a. holding slot, which should be a list of things
+    that are held."""
+
+    def __init__(self, width=10, height=10):
+        super().__init__()
+
+        self.width = width 
+        self.height = height
+        self.observers = []
+
+        self.x_start, self.y_start = (0, 0)
+        self.x_end, self.y_end = (self.width, self.height)
+
+    perceptible_distance = 1
+
+    def things_near(self, location, radius=None):
+        """Return all things within radius of location."""
+        if radius is None:
+            radius = self.perceptible_distance
+        radius2 = radius * radius
+        return [(thing, thing.location)
+            for thing in self.things if distance_squared(
+                location, thing.location) <= radius2]
+    
+    def percept(self, agent):
+        """By default, agent perceives things within a default radius."""
+        return (agent.location, self.things_near(location=agent.location, radius=agent.sensing_radius))
+
+    def execute_action(self, agent, action):
+        agent.bump = False
+        if action == "TurnRight":
+            agent.direction += Direction.R
+        elif action == "TurnLeft":
+            agent.direction += Direction.L
+        elif action == 'Suck' and 'Dirt' in [thing.__class__.__name__ for thing in self.list_things_at(agent.location)]:
+            things = [thing for thing in self.list_things_at(agent.location) if thing.__class__.__name__ == 'Dirt']
+            for thing in things:
+                self.delete_thing(thing)
+        elif action == 'up':
+            if agent.location[1] > 0:
+                new_location = (agent.location[0], agent.location[1] - 1)
+                self.move_to(agent, new_location)
+        elif action == 'down':
+            if agent.location[1] < self.height - 1:
+                new_location = (agent.location[0], agent.location[1] + 1)
+                self.move_to(agent, new_location)
+        elif action == 'left':
+            if agent.location[1] > 0:
+                new_location = (agent.location[0] - 1, agent.location[1])
+                self.move_to(agent, new_location)
+
+        elif action == 'right':
+            if agent.location[1] < self.width - 1:
+                new_location = (agent.location[0] + 1, agent.location[1])
+                self.move_to(agent, new_location)
+        elif action == 'Forward':
+            agent.bump = self.move_to(agent, agent.direction.move_forward(agent.locattion))
+        elif action == 'Grab':
+            things = [thing for thing in self.list_things_at(agent.location) if agent.can_grab(thing)]
+            if things:
+                agent.holding.append(thing[0])
+                print("Grabbing ", things[0].__class__.__name__ )
+                self.delete_thing(things[0])
+        elif action == 'Release':
+            if agent.holding:
+                dropped = agent.holding.pop()
+                print("Dropping ", dropped.__class__.__name__)
+                self.add_thing(dropped, location = agent.loaction)
+
+    def default_location(self, thing):
+        location = self.random_location_inbounds()
+        while self.some_things_at(location, Obstacle):
+            location = self.random_location_inbounds()
+        return location 
+    
+    def move_to(self, thing, destination):
+        """Move a thing to a new location. Returns True on success or False if there is an Obstacle.
+        If thing is holding anything, they move with him."""
+        thing.bump = self.some_thing_at(destination, Obstacle)
+        if not thing.bump:
+            thing.location = destination
+            for o in self.observers:
+                o.thing_moved(thing)
+            for t in thing.holding:
+                self.delete_thing(t)
+                self.add_thing(t, destination)
+                t.location = destination 
+            return thing.bump
