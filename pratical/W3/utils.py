@@ -57,3 +57,27 @@ def product(numbers) :
         result *= x
     return result
 
+def first(iterable, default = None):
+    """Return the first element of an iterable, or default."""
+    return next(iter(iterable), default)
+
+def is_in(elt, seq):
+    """Similar to (elt in seq), but compares with 'is', not '=='"""
+    return any(x is elt for x in seq)
+
+def mode(data):
+    """Return the most common data item. If there are ties, return any one of them."""
+    [(item, count)] = collections.Counter(data).most_common(1)
+    return item 
+
+def power_set(iterable):
+    """power_set([1,2,3] --> (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"""
+    s = list(iterable)
+    return list (chain.from_interable(combinations(s, r) for r in range(len(s) + 1))) [1:]
+
+def extend(s, var, val):
+    """Copy dict s and extend it by setting var to val; return copy."""
+    return {**s, var: val}
+
+def flatten(seqs):
+    return sum(seqs, [])
