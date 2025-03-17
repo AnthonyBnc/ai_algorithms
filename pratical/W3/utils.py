@@ -100,3 +100,32 @@ def shuffled(interable):
     items = list(interable)
     random.shuffle(items)
     return items
+
+# ______________________________________________________________________________
+# Statistical and mathematical functions
+
+def histogram(values, mode = 0, bin_function = None):
+    """Return a list of (value, count) pairs, summarizing the input values
+    Sorted by increasing value, or if mode = 1, by decreasing count
+    If bin_function is given, map it over value firsts"""
+    if bin_function: 
+        values = map(bin_function, values)
+
+        bins = {}
+        for val in values:
+            bins[val] =  bins.get(val, 0) + 1
+
+        if mode: 
+            return sorted(list(bins.items()), key=lambda x: (x[1], x[0], reverse = True))
+        else:
+            return sorted(bins.items())
+
+def dot_product(x, y):
+    """Return the sum of the element-wise product of vectors x and y."""
+    return sum(_x * _y for _x, _y in zip(x, y))
+
+def element_wise_product(x, y):
+    """Return the sum of the element-wise product of vectors x and y"""
+    assert len(x) == len(y)
+    return np.multiply(x, y)
+
