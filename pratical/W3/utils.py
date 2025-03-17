@@ -81,3 +81,22 @@ def extend(s, var, val):
 
 def flatten(seqs):
     return sum(seqs, [])
+
+# ______________________________________________________________________________
+# argmin and argmax
+
+identity = lambda x:x
+
+def argmin_random_tie(seq, key = identity):
+    """Return a minimum element of seq; break ties at random."""
+    return min(shuffled(seq), key=key)
+
+def argmax_random_tie(seq, key = identity):
+    """Return an element with highest fn(seq[i] score; break ties at random)"""
+    return max(shuffled(seq), key=key)
+
+def shuffled(interable):
+    """Randomly shuffle a copy of iterable."""
+    items = list(interable)
+    random.shuffle(items)
+    return items
