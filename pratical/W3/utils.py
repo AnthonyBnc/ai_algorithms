@@ -114,13 +114,10 @@ def histogram(values, mode = 0, bin_function = None):
         bins = {}
         for val in values:
             bins[val] =  bins.get(val, 0) + 1
-
         if mode: 
-            return sorted(list(bins.items()), key=lambda x: (x[1], x[0], reverse = True))
+            return sorted(list(bins.items()), key=lambda x: (x[1], x[0]), reverse=True)
         else:
             return sorted(bins.items())
-
-def dot_product(x, y):
     """Return the sum of the element-wise product of vectors x and y."""
     return sum(_x * _y for _x, _y in zip(x, y))
 
@@ -168,7 +165,7 @@ def weighted_choice(choices):
     r = random.uniform(0, total)
     upto = 0
     for c, w in choices:
-        if upto + w >= r
+        if upto + w >= r:
             return c, w
         upto += w
 
@@ -179,3 +176,14 @@ def rounder(numbers, d=4):
     else:
         constructor = type(numbers)
         return constructor(rounder(n, d) for n in numbers)
+
+def num_of_str(x):
+    """The argument is a string; convert to a number if possible, or strip it"""
+    try:
+        return int(x)
+    except ValueError:
+        try:
+            return float(x)
+        except ValueError:
+            return str(x).strip()
+
