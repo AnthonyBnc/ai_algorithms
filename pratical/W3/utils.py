@@ -129,3 +129,53 @@ def element_wise_product(x, y):
     assert len(x) == len(y)
     return np.multiply(x, y)
 
+def matrix_multiplication(x, *y):
+    """Return a matrix as a matrix-multiplication of x and arbitrary number of matrices *y"""
+    result = x
+    for _y in y: 
+        result = np.matmul(result, _y)
+    return result 
+
+def vector_add(a, b):
+    """Component-wise addition of two vectors"""
+    return tuple(map(operator.add, a, b))
+
+def scalar_vector_product(x, y):
+    """Return vector as a product of a scalar and a vector"""
+    return np.multiply(x, y)
+
+def probability(p):
+    """Return true with probability p"""
+    return p > random.uniform(0.0, 1.0)
+
+def weighted_sample_with_replacement(n, seq, weights):
+    """Pick n samples from seq at random, with replacement, with the probability 
+    of each element in proportion to its corresponding
+    weight"""
+    sample = weighted_sampler(seq, weights)
+    return [sample() for _ in range(n)]
+
+def weighted_sampler(seq, weights):
+    """Return a random-sample function that picks from seq weighted by erights"""
+    totals = []
+    for w in weights: 
+        totals.append(w + totals[-1] if totals else w)
+    return lambda: seq[bisect.bisect(totals, random.uniform(0, totals[-1]))]
+
+def weighted_choice(choices):
+    """A weighted version of random.choice"""
+    total = sum(w for _, w in choices)
+    r = random.uniform(0, total)
+    upto = 0
+    for c, w in choices:
+        if upto + w >= r
+            return c, w
+        upto += w
+
+def rounder(numbers, d=4):
+    """Round a single number, or sequence of numbers, to d decimal places"""
+    if isinstance(numbers, (int, float)):
+        return round(numbers, d)
+    else:
+        constructor = type(numbers)
+        return constructor(rounder(n, d) for n in numbers)
