@@ -92,5 +92,41 @@ class Node:
             path_back.append(node)
             node = node.parent
         return list(reversed(path_back))
-        
+
+    def __eq__(self, other):
+        return isinstance(other, Node) and self.state == other.state
+    
+    def __hash__(self):
+        return hash(self.state)
+
+    def best_first_graph_search(problem, f, display = False):
+        """Search the nodes with the lowest f score first.
+        You specify the function f(node) that you want to minimize, for example,
+        if f is a heuristic estimate to the goal, then we have greedy best
+        first search; if f is node.depth then we have breadth-first search.
+        There is asubtlety: the line"f = memoize(f, 'f') means that the f values
+        will be cached on the nodes as they are computed. So after doing a best frist search you can examine the f values of the path returned"""
+
+        f = memoize(f, 'f')
+        node = Node(problem.initial)
+        frontier = PriorityQueue('min', f)
+        frontier.append(node)
+        explored = set()
+        while frontier:
+            node = frontier.pop()
+            if problem.goal_test(node.state):
+                if display:
+                    print(len(explored), "paths have been expanded and", len(frontier),
+                    "paths remain in the frontier")
+                return node
+            explored.add(node.state)
+            for child in node.expand(problem):
+                if child.state not in explored and child not in frontier:
+                    frontier.append(child)
+                elif child in frontier:
+                    if f(child) < frontier[child]:
+                        del frontier[child]
+                        frontier.append(child)
+        return None
+
         
