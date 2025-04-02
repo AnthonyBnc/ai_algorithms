@@ -80,4 +80,17 @@ def alphabeta(node, alpha, beta, is_maximizing, depth = 0):
 
     print(f"{indent}{'MAX' if is_maximizing else 'MIN'} at node {node} returns {value}")
     return value
-    
+
+# 1(d): Order of node examination 
+visited_leaves = []
+
+def trace_minimax(node, is_maximizing):
+    if isinstance(node, list):
+        visited_leaves.extend(node)
+        return max(node) if is_maximizing else min(node)
+    return max([trace_minimax(child, not is_maximizing) for child in tree[node]]) if is_maximizing else min([trace_minimax(child, not is_maximizing) for child in tree[node]])
+
+print("\nTask 1(d): Order of node examination")
+print("Minimax: ", end="")
+result = trace_minimax('A', True)
+print(f"Result: {result}")
